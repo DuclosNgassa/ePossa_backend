@@ -1,10 +1,14 @@
 package com.kmerconsulting.epossa.controller;
 
-import com.kmerconsulting.epossa.dao.UserService;
+import com.kmerconsulting.epossa.mapper.UserMapper;
 import com.kmerconsulting.epossa.model.User;
+import com.kmerconsulting.epossa.model.UserDTO;
+import com.kmerconsulting.epossa.model.UserPassword;
 import com.kmerconsulting.epossa.model.UserStatus;
+import com.kmerconsulting.epossa.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,81 +22,149 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    UserMapper userMapper;
 
-    @PostMapping("/users")
-    public User createUser(@Valid @RequestBody User user) {
+    @PostMapping("/signin")
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody User user) {
         user.setCreated_at(LocalDateTime.now());
-        return userService.save(user);
+
+        User createdUser = userService.save(user);
+
+        if (createdUser == null) {
+            return ResponseEntity.notFound().build(); //TODO gibt eine bessere Fehlermeldung aus
+        }
+
+        UserDTO createdUserDTO = userMapper.mapToBasisDTO(createdUser);
+
+        return ResponseEntity.ok(createdUserDTO);
     }
 
-    @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.findAll();
+    @PutMapping("/changepassword")
+    public ResponseEntity<UserDTO> changePassword(@Valid @RequestBody UserPassword userPassword) {
+
+        User changedUser = null;
+        if (userService.checkPasswordCorrect(userPassword.getPhone(), userPassword.getOldPassword())) {
+            changedUser = userService.changePassword(userPassword.getPhone(), userPassword.getNewPassword());
+        }
+
+        if (changedUser == null) {
+            return ResponseEntity.notFound().build(); //TODO gibt eine bessere Fehlermeldung aus
+        }
+
+        UserDTO changedUserDTO = userMapper.mapToBasisDTO(changedUser);
+
+        return ResponseEntity.ok(changedUserDTO);
     }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long id) {
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<User> users = userService.findAll();
+
+        if (users == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<UserDTO> userDTOS = users.stream().map(userMapper::mapToBasisDTO).collect(Collectors.toList());
+
+        return ResponseEntity.ok(userDTOS);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable(value = "id") Long id) {
         User user = userService.findById(id);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(user);
+        UserDTO userDTO = userMapper.mapToBasisDTO(user);
+
+        return ResponseEntity.ok(userDTO);
     }
 
-    @GetMapping("/users/phone/{phone}")
-    public ResponseEntity<User> getUserByPhone(@PathVariable(value = "phone") String phone) {
+    @GetMapping("/phone/{phone}")
+    public ResponseEntity<UserDTO> getUserByPhone(@PathVariable(value = "phone") String phone) {
         User user = userService.findByPhone(phone);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(user);
+        UserDTO userDTO = userMapper.mapToBasisDTO(user);
+
+        return ResponseEntity.ok(userDTO);
     }
 
-    @GetMapping("/users/active")
-    public List<User> getAllActiveUsers() {
-        return userService.findByStatus(UserStatus.active);
+    @GetMapping("/device/{device}")
+    public ResponseEntity<UserDTO> getUserByDevice(@PathVariable(value = "device") String device) {
+        User user = userService.findByDevice(device);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDTO userDTO = userMapper.mapToBasisDTO(user);
+
+        return ResponseEntity.ok(userDTO);
     }
 
-    @GetMapping("/users/blocked")
-    public List<User> getAllBlockedUsers() {
-        return userService.findByStatus(UserStatus.blocked);
+    @GetMapping("/active")
+    public ResponseEntity<List<UserDTO>> getAllActiveUsers() {
+        List<User> users = userService.findByStatus(UserStatus.active);
+        if (users == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<UserDTO> userDTOS = users.stream().map(userMapper::mapToBasisDTO).collect(Collectors.toList());
+
+        return ResponseEntity.ok(userDTOS);
     }
 
-    @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody User userDetail) {
+    @GetMapping("/blocked")
+    public ResponseEntity<List<UserDTO>> getAllBlockedUsers() {
+        List<User> users = userService.findByStatus(UserStatus.blocked);
+        if (users == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<UserDTO> userDTOS = users.stream().map(userMapper::mapToBasisDTO).collect(Collectors.toList());
+
+        return ResponseEntity.ok(userDTOS);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody UserDTO userDetail) {
         User user = userService.findById(id);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
-        user.setName(userDetail.getName());
-        user.setPhone(userDetail.getPhone());
-        user.setBalance(userDetail.getBalance());
-        user.setRating(userDetail.getRating());
-        user.setPassword(userDetail.getPassword());
-        user.setStatus(userDetail.getStatus());
+        user.setName(userDetail.getName() != null ? userDetail.getName() : user.getName());
+        user.setPhone(userDetail.getPhone() != null ? userDetail.getPhone() : user.getPhone());
+        user.setBalance(userDetail.getBalance() != null ? userDetail.getBalance() : user.getBalance());
+        user.setRating(userDetail.getRating() != 0 ? userDetail.getRating() : user.getRating());
+        user.setStatus(userDetail.getStatus() != null ? userDetail.getStatus() : user.getStatus());
 
-        User updatedUser = userService.save(user);
+        User updatedUser = userService.update(user);
 
-        return ResponseEntity.ok().body(updatedUser);
+        UserDTO userDTO = userMapper.mapToBasisDTO(updatedUser);
+
+        return ResponseEntity.ok(userDTO);
     }
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable(value = "id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable(value = "id") Long id) {
         User user = userService.findById(id);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
         userService.delete(id);
 
-        return ResponseEntity.ok().build();
-    }
+        UserDTO userDTO = userMapper.mapToBasisDTO(user);
 
+        return ResponseEntity.ok(userDTO);
+    }
 }

@@ -1,32 +1,13 @@
 package com.kmerconsulting.epossa.model;
 
 import java.math.BigDecimal;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
-@Table(name = "User")
-@EntityListeners(AuditingEntityListener.class)
-public class User extends BasisEntity {
-    @Column(length = 45, nullable = false)
+public class UserDTO extends BasisDTO {
     private String name;
-    @Column(length = 45, nullable = false)
     private String phone;
-    @Column(length = 300, nullable = false)
-    private String password;
-    @Column
     private BigDecimal balance;
-    @Column(nullable = false)
     private int rating;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private UserStatus status;
-    @Column(nullable = false)
     private String device;
 
     public String getName() {
@@ -43,14 +24,6 @@ public class User extends BasisEntity {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public BigDecimal getBalance() {

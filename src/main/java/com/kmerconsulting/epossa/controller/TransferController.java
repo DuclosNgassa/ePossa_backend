@@ -1,10 +1,10 @@
 package com.kmerconsulting.epossa.controller;
 
-import com.kmerconsulting.epossa.dao.TransferService;
-import com.kmerconsulting.epossa.dao.UserService;
 import com.kmerconsulting.epossa.model.Transfer;
 import com.kmerconsulting.epossa.model.TransferOperation;
 import com.kmerconsulting.epossa.model.User;
+import com.kmerconsulting.epossa.service.TransferService;
+import com.kmerconsulting.epossa.service.UserService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,30 +30,36 @@ public class TransferController {
     UserService userService;
 
     @PostMapping("/transfers")
-    public Transfer createTransfer(@Valid @RequestBody Transfer transfer) {
+    public ResponseEntity<Transfer> createTransfer(@Valid @RequestBody Transfer transfer) {
         //TODO implements validator sender and receiver must be different
 
         String sender = transfer.getSender();
         User userSender = userService.findByPhone(sender);
-        if(userSender == null){
-            return null; // Fehlermeldung Sender existiert nicht
+        if (userSender == null) {
+            return ResponseEntity.notFound().build();// TODO Fehlermeldung Sender existiert nicht
         }
 
         String receiver = transfer.getReceiver();
         User userReceiver = userService.findByPhone(receiver);
-        if(userReceiver == null){
-            return null; // Fehlermeldung Receiver existiert nicht
+        if (userReceiver == null) {
+            return ResponseEntity.notFound().build();// Fehlermeldung Receiver existiert nicht
         }
 
         updateUserForTransfer(userSender, transfer.getAmount(), TransferOperation.SUBTRACT);
         updateUserForTransfer(userReceiver, transfer.getAmount(), TransferOperation.ADD);
 
-        return transferService.save(transfer);
+        Transfer createdTransfer = transferService.save(transfer);
+
+        return ResponseEntity.ok(createdTransfer);
     }
 
     @GetMapping("/transfers")
-    public List<Transfer> getAllTransfers() {
-        return transferService.findAll();
+    public ResponseEntity<List<Transfer>> getAllTransfers() {
+        List<Transfer> transfers = transferService.findAll();
+        if (transfers == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(transfers);
     }
 
     @GetMapping("/transfers/{id}")
@@ -67,17 +73,25 @@ public class TransferController {
     }
 
     @GetMapping("/transfers/sender/{sender}")
-    public List<Transfer> getTransferBySender(@PathVariable(value = "sender") Long sender) {
-        return transferService.findBySender(sender);
+    public ResponseEntity<List<Transfer>> getTransferBySender(@PathVariable(value = "sender") String sender) {
+        List<Transfer> transfers = transferService.findBySender(sender);
+        if (transfers == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(transfers);
     }
 
     @GetMapping("/transfers/receiver/{receiver}")
-    public List<Transfer> getTransferByReceiver(@PathVariable(value = "receiver") Long receiver) {
-        return transferService.findByReceiver(receiver);
+    public ResponseEntity<List<Transfer>> getTransferByReceiver(@PathVariable(value = "receiver") String receiver) {
+        List<Transfer> transfers = transferService.findByReceiver(receiver);
+        if (transfers == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(transfers);
     }
 
     @GetMapping("/transfers/user/{user}")
-    public List<Transfer> getTransferByUser(@PathVariable(value = "user") Long user) {
+    public ResponseEntity<List<Transfer>> getTransferByUser(@PathVariable(value = "user") String user) {
         List<Transfer> sentTransfers = transferService.findBySender(user);
         List<Transfer> receivedTransfers = transferService.findByReceiver(user);
 
@@ -89,7 +103,7 @@ public class TransferController {
             sentAndReceivedTransfers.addAll(receivedTransfers);
         }
 
-        return sentAndReceivedTransfers;
+        return ResponseEntity.ok(sentAndReceivedTransfers);
     }
 
     @PutMapping("/transfers/{id}")
@@ -100,8 +114,8 @@ public class TransferController {
             return ResponseEntity.notFound().build();
         }
 
-        transfer.setSender(transferDetail.getSender());
-        transfer.setReceiver(transferDetail.getReceiver());
+        transfer.setSender(transferDetail.getSender() != null ? transferDetail.getSender() : transfer.getSender());
+        transfer.setReceiver(transferDetail.getReceiver() != null ? transferDetail.getReceiver() : transfer.getReceiver());
         transfer.setAmount(transferDetail.getAmount());
         transfer.setDescription(transferDetail.getDescription());
 
@@ -121,12 +135,12 @@ public class TransferController {
         return ResponseEntity.ok().build();
     }
 
-    private void updateUserForTransfer(User user, BigDecimal amount, TransferOperation operation){
+    private void updateUserForTransfer(User user, BigDecimal amount, TransferOperation operation) {
         BigDecimal newBalance = BigDecimal.ZERO;
 
-        if(TransferOperation.ADD.equals(operation)) {
+        if (TransferOperation.ADD.equals(operation)) {
             newBalance = user.getBalance().add(amount);
-        } else if(TransferOperation.SUBTRACT.equals(operation)) {
+        } else if (TransferOperation.SUBTRACT.equals(operation)) {
             newBalance = user.getBalance().subtract(amount);
         }
 

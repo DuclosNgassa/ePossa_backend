@@ -1,23 +1,11 @@
 package com.kmerconsulting.epossa.model;
 
 import java.math.BigDecimal;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Table;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
-@Table(name = "Transfer")
-@EntityListeners(AuditingEntityListener.class)
-public class Transfer extends BasisEntity {
-    @Column(nullable = false, length = 45)
+public class TransferDTO extends BasisDTO {
     private String sender; //SenderPhone
-    @Column(nullable = false, length = 45)
     private String receiver; //ReceiverPhone
-    @Column(nullable = false)
     private BigDecimal amount;
-    @Column(length = 255)
     private String description;
 
     public String getSender() {

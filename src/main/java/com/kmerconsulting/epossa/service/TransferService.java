@@ -1,4 +1,4 @@
-package com.kmerconsulting.epossa.dao;
+package com.kmerconsulting.epossa.service;
 
 import com.kmerconsulting.epossa.model.Transfer;
 import com.kmerconsulting.epossa.repository.TransferRepository;
@@ -26,11 +26,11 @@ public class TransferService {
         return transferRepository.findById(id).orElse(null);
     }
 
-    public List<Transfer> findBySender(Long sender) {
+    public List<Transfer> findBySender(String sender) {
         return transferRepository.findBySender(sender).orElse(null);
     }
 
-    public List<Transfer> findByReceiver(Long receiver) {
+    public List<Transfer> findByReceiver(String receiver) {
         return transferRepository.findByReceiver(receiver).orElse(null);
     }
 
