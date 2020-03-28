@@ -57,7 +57,6 @@ public class UserService {
     public boolean checkPasswordCorrect(String phone, String oldPassword) {
         User user = findByPhone(phone);
         if (user != null) {
-            String hashedOldPassword = securityConfiguration.passwordEncoder().encode(oldPassword);
             if (securityConfiguration.passwordEncoder().matches(oldPassword, user.getPassword())) {
                 return true;
             }
@@ -69,7 +68,7 @@ public class UserService {
         User user = findByPhone(phone);
         if (user != null) {
             user.setPassword(securityConfiguration.passwordEncoder().encode(newPassword));
-            return save(user);
+            return update(user);
         }
         return null;
     }

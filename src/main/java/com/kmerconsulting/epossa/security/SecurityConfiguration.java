@@ -1,5 +1,6 @@
 package com.kmerconsulting.epossa.security;
 
+import com.kmerconsulting.epossa.model.UserRole;
 import com.kmerconsulting.epossa.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,6 +53,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // configure access rules
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/users/signin").permitAll()
+                .antMatchers(HttpMethod.DELETE, "/api/*").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.GET, "/api/users/all").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.GET, "/api/users/device/*").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.GET, "/api/users/active").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.GET, "/api/users/blocked").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.GET, "/api/transfers").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.PUT, "/api/transfers/*").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.DELETE, "/api/transfers/*").hasRole(UserRole.admin.toString())
                 .anyRequest().authenticated();
     }
 

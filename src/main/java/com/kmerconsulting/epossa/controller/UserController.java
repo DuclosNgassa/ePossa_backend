@@ -62,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok(changedUserDTO);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.findAll();
 
@@ -147,6 +147,7 @@ public class UserController {
         user.setBalance(userDetail.getBalance() != null ? userDetail.getBalance() : user.getBalance());
         user.setRating(userDetail.getRating() != 0 ? userDetail.getRating() : user.getRating());
         user.setStatus(userDetail.getStatus() != null ? userDetail.getStatus() : user.getStatus());
+        user.setRole(userDetail.getRole() != null ? userDetail.getRole() : user.getRole());
 
         User updatedUser = userService.update(user);
 

@@ -16,6 +16,7 @@ public class UserMapper implements Mapper<User, UserDTO> {
         user.setPhone(userDTO.getPhone());
         user.setDevice(userDTO.getDevice());
         user.setStatus(userDTO.getStatus());
+        user.setRole(userDTO.getRole());
         user.setBalance(userDTO.getBalance());
         user.setRating(userDTO.getRating());
 
@@ -31,6 +32,7 @@ public class UserMapper implements Mapper<User, UserDTO> {
         userDTO.setPhone(user.getPhone());
         userDTO.setDevice(user.getDevice());
         userDTO.setStatus(user.getStatus());
+        userDTO.setRole(user.getRole());
         userDTO.setBalance(user.getBalance());
         userDTO.setRating(user.getRating());
 

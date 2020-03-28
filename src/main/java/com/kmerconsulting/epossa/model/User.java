@@ -27,6 +27,9 @@ public class User extends BasisEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+    @Column(nullable = false)
     private String device;
 
     public String getName() {
@@ -75,6 +78,14 @@ public class User extends BasisEntity {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public String getDevice() {

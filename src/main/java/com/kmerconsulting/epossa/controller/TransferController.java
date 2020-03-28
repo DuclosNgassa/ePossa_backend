@@ -145,7 +145,7 @@ public class TransferController {
         }
 
         user.setBalance(newBalance);
-        userService.save(user);
+        userService.update(user);
     }
 
 }
