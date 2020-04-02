@@ -15,6 +15,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class User extends BasisEntity {
     @Column(length = 45, nullable = false)
     private String name;
+    @Column(nullable = false)
+    private String email;
     @Column(length = 45, nullable = false)
     private String phone;
     @Column(length = 300, nullable = false)
@@ -38,6 +40,14 @@ public class User extends BasisEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPhone() {

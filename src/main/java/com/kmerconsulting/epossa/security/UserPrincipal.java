@@ -40,21 +40,21 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return user.getStatus().equals(UserStatus.active);
+        return !user.getStatus().equals(UserStatus.blocked);
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.getStatus().equals(UserStatus.active);
+        return !user.getStatus().equals(UserStatus.blocked);
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return user.getStatus().equals(UserStatus.active);
+        return !user.getStatus().equals(UserStatus.blocked);
     }
 
     @Override
     public boolean isEnabled() {
-        return user.getStatus().equals(UserStatus.active);
+        return !user.getStatus().equals(UserStatus.blocked);
     }
 }

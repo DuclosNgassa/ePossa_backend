@@ -58,6 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/users/device/*").hasRole(UserRole.admin.toString())
                 .antMatchers(HttpMethod.GET, "/api/users/active").hasRole(UserRole.admin.toString())
                 .antMatchers(HttpMethod.GET, "/api/users/blocked").hasRole(UserRole.admin.toString())
+                .antMatchers(HttpMethod.PUT, "/api/users/role/update/*").hasRole(UserRole.admin.toString())
                 .antMatchers(HttpMethod.GET, "/api/transfers").hasRole(UserRole.admin.toString())
                 .antMatchers(HttpMethod.PUT, "/api/transfers/*").hasRole(UserRole.admin.toString())
                 .antMatchers(HttpMethod.DELETE, "/api/transfers/*").hasRole(UserRole.admin.toString())

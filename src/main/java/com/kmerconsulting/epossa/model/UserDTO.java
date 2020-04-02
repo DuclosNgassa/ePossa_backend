@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 
 public class UserDTO extends BasisDTO {
     private String name;
+    private String email;
     private String phone;
     private BigDecimal balance;
     private int rating;
     private UserStatus status;
-    private UserRole role;
     private String device;
 
     public String getName() {
@@ -17,6 +17,14 @@ public class UserDTO extends BasisDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPhone() {
@@ -49,14 +57,6 @@ public class UserDTO extends BasisDTO {
 
     public void setStatus(UserStatus status) {
         this.status = status;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
     }
 
     public String getDevice() {

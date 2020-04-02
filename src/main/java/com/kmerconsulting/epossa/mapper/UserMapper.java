@@ -2,9 +2,9 @@ package com.kmerconsulting.epossa.mapper;
 
 import com.kmerconsulting.epossa.model.User;
 import com.kmerconsulting.epossa.model.UserDTO;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class UserMapper implements Mapper<User, UserDTO> {
 
     @Override
@@ -13,10 +13,10 @@ public class UserMapper implements Mapper<User, UserDTO> {
         user.setId(userDTO.getId());
         user.setCreated_at(userDTO.getCreated_at());
         user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
         user.setPhone(userDTO.getPhone());
         user.setDevice(userDTO.getDevice());
         user.setStatus(userDTO.getStatus());
-        user.setRole(userDTO.getRole());
         user.setBalance(userDTO.getBalance());
         user.setRating(userDTO.getRating());
 
@@ -29,10 +29,10 @@ public class UserMapper implements Mapper<User, UserDTO> {
         userDTO.setId(user.getId());
         userDTO.setCreated_at(user.getCreated_at());
         userDTO.setName(user.getName());
+        userDTO.setEmail(user.getEmail());
         userDTO.setPhone(user.getPhone());
         userDTO.setDevice(user.getDevice());
         userDTO.setStatus(user.getStatus());
-        userDTO.setRole(user.getRole());
         userDTO.setBalance(user.getBalance());
         userDTO.setRating(user.getRating());
 

@@ -1,9 +1,12 @@
 package com.kmerconsulting.epossa.controller;
 
 import com.kmerconsulting.epossa.mapper.UserMapper;
+import com.kmerconsulting.epossa.mapper.UserRoleMapper;
 import com.kmerconsulting.epossa.model.User;
 import com.kmerconsulting.epossa.model.UserDTO;
 import com.kmerconsulting.epossa.model.UserPassword;
+import com.kmerconsulting.epossa.model.UserRole;
+import com.kmerconsulting.epossa.model.UserRoleDTO;
 import com.kmerconsulting.epossa.model.UserStatus;
 import com.kmerconsulting.epossa.service.UserService;
 import java.time.LocalDateTime;
@@ -29,11 +32,13 @@ public class UserController {
     UserService userService;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    UserRoleMapper userRoleMapper;
 
     @PostMapping("/signin")
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody User user) {
         user.setCreated_at(LocalDateTime.now());
-
+        user.setRole(UserRole.user);
         User createdUser = userService.save(user);
 
         if (createdUser == null) {
@@ -60,6 +65,23 @@ public class UserController {
         UserDTO changedUserDTO = userMapper.mapToBasisDTO(changedUser);
 
         return ResponseEntity.ok(changedUserDTO);
+    }
+
+    @PutMapping("/role/update/{id}")
+    public ResponseEntity<UserDTO> changeRole(@PathVariable(value = "id") Long id, @Valid @RequestBody UserRoleDTO userRoleDTO) {
+        User user = userService.findById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserRole userRole = userRoleMapper.mapDTOToUserRole(userRoleDTO);
+        user.setRole(userRole != null ? userRole : user.getRole());
+
+        User updatedUser = userService.update(user);
+
+        UserDTO userDTO = userMapper.mapToBasisDTO(updatedUser);
+
+        return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping("/all")
@@ -143,11 +165,11 @@ public class UserController {
         }
 
         user.setName(userDetail.getName() != null ? userDetail.getName() : user.getName());
+        user.setEmail(userDetail.getEmail() != null ? userDetail.getEmail() : user.getEmail());
         user.setPhone(userDetail.getPhone() != null ? userDetail.getPhone() : user.getPhone());
         user.setBalance(userDetail.getBalance() != null ? userDetail.getBalance() : user.getBalance());
         user.setRating(userDetail.getRating() != 0 ? userDetail.getRating() : user.getRating());
         user.setStatus(userDetail.getStatus() != null ? userDetail.getStatus() : user.getStatus());
-        user.setRole(userDetail.getRole() != null ? userDetail.getRole() : user.getRole());
 
         User updatedUser = userService.update(user);
 
