@@ -2,6 +2,7 @@ package com.kmerconsulting.epossa.controller;
 
 import com.kmerconsulting.epossa.mapper.UserMapper;
 import com.kmerconsulting.epossa.mapper.UserRoleMapper;
+import com.kmerconsulting.epossa.model.ResetPassword;
 import com.kmerconsulting.epossa.model.User;
 import com.kmerconsulting.epossa.model.UserDTO;
 import com.kmerconsulting.epossa.model.UserPassword;
@@ -65,6 +66,17 @@ public class UserController {
         UserDTO changedUserDTO = userMapper.mapToBasisDTO(changedUser);
 
         return ResponseEntity.ok(changedUserDTO);
+    }
+
+    @PutMapping("/resetpassword")
+    public ResponseEntity resetPassword(@Valid @RequestBody ResetPassword resetPassword) {
+
+        User changedUser = userService.changePasswordAndSetPending(resetPassword.getPhone(), resetPassword.getEmail(), resetPassword.getTemppassword());
+
+        if (changedUser != null) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build(); //TODO gibt eine bessere Fehlermeldung aus
     }
 
     @PutMapping("/role/update/{id}")

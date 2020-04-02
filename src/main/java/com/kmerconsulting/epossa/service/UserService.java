@@ -66,11 +66,25 @@ public class UserService {
 
     public User changePassword(String phone, String newPassword) {
         User user = findByPhone(phone);
-        if (user != null) {
+        if (user != null && isUserActive(user)) {
             user.setPassword(securityConfiguration.passwordEncoder().encode(newPassword));
             return update(user);
         }
         return null;
+    }
+
+    public User changePasswordAndSetPending(String phone, String email, String newPassword) {
+        User user = findByPhone(phone);
+        if (user != null && user.getEmail().equals(email) && isUserActive(user)) {
+            user.setStatus(UserStatus.pending);
+            user.setPassword(securityConfiguration.passwordEncoder().encode(newPassword));
+            return update(user);
+        }
+        return null;
+    }
+
+    public boolean isUserActive(User user){
+        return user.getStatus() == UserStatus.active;
     }
 
 }

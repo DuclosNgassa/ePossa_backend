@@ -3,7 +3,7 @@ package com.kmerconsulting.epossa.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kmerconsulting.epossa.model.LoginViewModel;
+import com.kmerconsulting.epossa.model.Login;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
@@ -33,9 +33,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         // Grab creadentials and map them to AuthRequest
-        LoginViewModel credentials = null;
+        Login credentials = null;
         try {
-            credentials = new ObjectMapper().readValue(request.getInputStream(), LoginViewModel.class);
+            credentials = new ObjectMapper().readValue(request.getInputStream(), Login.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

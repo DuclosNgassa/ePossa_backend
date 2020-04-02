@@ -1,6 +1,6 @@
 package com.kmerconsulting.epossa.model;
 
-public class LoginViewModel {
+public class Login {
     private String username;
     private String password;
 
