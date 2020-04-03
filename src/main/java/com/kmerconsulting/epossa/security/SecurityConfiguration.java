@@ -52,7 +52,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // configure access rules
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/resetpassword").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/users/resetpassword").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/users/signin").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/api/*").hasRole(UserRole.admin.toString())
                 .antMatchers(HttpMethod.GET, "/api/users/all").hasRole(UserRole.admin.toString())

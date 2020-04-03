@@ -75,7 +75,7 @@ public class UserService {
 
     public User changePasswordAndSetPending(String phone, String email, String newPassword) {
         User user = findByPhone(phone);
-        if (user != null && user.getEmail().equals(email) && isUserActive(user)) {
+        if (user != null && user.getEmail().equals(email) && !isUserBlocked(user)) {
             user.setStatus(UserStatus.pending);
             user.setPassword(securityConfiguration.passwordEncoder().encode(newPassword));
             return update(user);
@@ -83,8 +83,16 @@ public class UserService {
         return null;
     }
 
-    public boolean isUserActive(User user){
+    public boolean isUserActive(User user) {
         return user.getStatus() == UserStatus.active;
+    }
+
+    public boolean isUserPending(User user) {
+        return user.getStatus() == UserStatus.pending;
+    }
+
+    public boolean isUserBlocked(User user) {
+        return user.getStatus() == UserStatus.blocked;
     }
 
 }
